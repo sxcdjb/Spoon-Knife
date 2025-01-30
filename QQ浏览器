@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>俄罗斯方块</title>
+    <style>
+        body {
+            background: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #game {
+            background: #000;
+            border: 2px solid #fff;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="game" width="300" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('game');
+        const ctx = canvas.getContext('2d');
+        const BLOCK_SIZE = 30;
+        const COLS = 10, ROWS = 20;
+
+        // 方块形状
+        const SHAPES = [
+            [[1,1,1,1]], // I型
+            [[1,1],[1,1]], // 田型
+            [[1,1,1],[0,1,0]], // T型
+            [[1,1,1],[1,0,0]], // L型
+            [[1,1,1],[0,0,1]]  // J型
+        ];
+
+        let currentPiece = null;
+        let currentX = 0, currentY = 0;
+
+        // 初始化游戏
+        function init() {
+            spawnNewPiece();
+            requestAnimationFrame(update);
+        }
+
+        // 生成新方块
+        function spawnNewPiece() {
+            const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+            currentPiece = shape;
+            currentX = Math.floor(COLS/2) - Math.floor(shape[0].length/2);
+            currentY = 0;
+        }
+
+        // 绘制游戏
+        function draw() {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // 绘制当前方块
+            ctx.fillStyle = '#00f';
+            for (let y = 0; y < currentPiece.length; y++) {
+                for (let x = 0; x < currentPiece[y].length; x++) {
+                    if (currentPiece[y][x]) {
+                        ctx.fillRect(
+                            (currentX + x) * BLOCK_SIZE,
+                            (currentY + y) * BLOCK_SIZE,
+                            BLOCK_SIZE - 1,
+                            BLOCK_SIZE - 1
+                        );
+                    }
+                }
+            }
+        }
+
+        // 更新游戏状态
+        function update() {
+            currentY += 1;
+            draw();
+            setTimeout(() => requestAnimationFrame(update), 1000);
+        }
+
+        // 键盘控制
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') currentX--;
+            if (e.key === 'ArrowRight') currentX++;
+            if (e.key === 'ArrowDown') currentY++;
+        });
+
+        init();
+    </script>
+</body>
+</html>
